@@ -32,12 +32,10 @@
 
         body {
             background: 
-                /* Gradient overlay để làm nổi bật nội dung */
                 linear-gradient(135deg, 
                     rgba(15, 12, 41, 0.85), 
                     rgba(48, 43, 99, 0.85), 
                     rgba(36, 36, 62, 0.85)),
-                /* Hình ảnh background mới */
                 url('https://i.pinimg.com/736x/2d/76/5b/2d765b451da562eaf059d94a9ff3e828.jpg');
             
             background-size: cover;
@@ -215,7 +213,7 @@
         /* Main Content */
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 360px; /* Đã điều chỉnh: playlist rộng hơn 40px */
+            grid-template-columns: 1fr 360px;
             gap: 20px;
             flex: 1;
             overflow: hidden;
@@ -233,7 +231,6 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            /* Đã thu hẹp 40px so với trước đây */
         }
 
         .youtube-player {
@@ -246,7 +243,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        .youtube-player iframe {
+        #player {
             width: 100%;
             height: 100%;
             border: none;
@@ -315,7 +312,6 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            /* Đã mở rộng 40px so với trước đây */
         }
 
         .playlist-header {
@@ -386,7 +382,7 @@
 
         .playlist-details {
             flex: 1;
-            min-width: 0; /* Đảm bảo nội dung không bị tràn */
+            min-width: 0;
         }
 
         .playlist-title {
@@ -550,6 +546,7 @@
         <div class="main-content">
             <div class="player-section">
                 <div class="youtube-player">
+                    <!-- Đây là nơi YouTube Player sẽ được tạo -->
                     <div id="player"></div>
                 </div>
                 
@@ -671,6 +668,7 @@
 
         // Khi player sẵn sàng
         function onPlayerReady(event) {
+            updateSongInfo();
             renderPlaylist();
             setupEventListeners();
         }
@@ -704,18 +702,30 @@
             });
         }
 
+        // Cập nhật thông tin bài hát
+        function updateSongInfo() {
+            const song = songs[currentSongIndex];
+            currentSongTitle.textContent = song.title;
+            currentSongArtist.textContent = song.artist;
+        }
+
         // Tải bài hát
         function loadSong(index) {
             const song = songs[index];
-            currentSongTitle.textContent = song.title;
-            currentSongArtist.textContent = song.artist;
+            currentSongIndex = index;
             
             // Load video mới
             player.loadVideoById(song.youtubeId);
             
-            // Update active state
+            // Update thông tin và active state
+            updateSongInfo();
+            updateActivePlaylistItem();
+        }
+
+        // Cập nhật trạng thái active của playlist
+        function updateActivePlaylistItem() {
             document.querySelectorAll('.playlist-item').forEach((item, i) => {
-                item.classList.toggle('active', i === index);
+                item.classList.toggle('active', i === currentSongIndex);
             });
         }
 
