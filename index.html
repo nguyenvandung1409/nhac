@@ -550,14 +550,7 @@
         <div class="main-content">
             <div class="player-section">
                 <div class="youtube-player">
-                    <iframe 
-                        src="https://www.youtube.com/embed/TzkymcRi-Dg?si=ztb1K6Y5r94gPpeG" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        referrerpolicy="strict-origin-when-cross-origin" 
-                        allowfullscreen>
-                    </iframe>
+                    <div id="player"></div>
                 </div>
                 
                 <div class="song-info">
@@ -589,6 +582,9 @@
         </div>
     </div>
 
+    <!-- YouTube Player API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    
     <script>
         // Danh sách bài hát
         const songs = [
@@ -645,6 +641,7 @@
 
         // Biến toàn cục
         let currentSongIndex = 0;
+        let player;
 
         // DOM Elements
         const prevBtn = document.getElementById('prev-btn');
@@ -652,13 +649,38 @@
         const currentSongTitle = document.getElementById('current-song-title');
         const currentSongArtist = document.getElementById('current-song-artist');
         const playlistEl = document.getElementById('playlist');
-        const youtubeIframe = document.querySelector('.youtube-player iframe');
 
-        // Khởi tạo
-        function init() {
+        // Khởi tạo YouTube Player
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: songs[currentSongIndex].youtubeId,
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'rel': 0,
+                    'modestbranding': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // Khi player sẵn sàng
+        function onPlayerReady(event) {
             renderPlaylist();
-            loadSong(currentSongIndex);
             setupEventListeners();
+        }
+
+        // Theo dõi trạng thái player
+        function onPlayerStateChange(event) {
+            // Khi video kết thúc (trạng thái = 0)
+            if (event.data === YT.PlayerState.ENDED) {
+                nextSong();
+            }
         }
 
         // Render playlist
@@ -673,7 +695,6 @@
                         <div class="playlist-title">${song.title}</div>
                         <div class="playlist-artist">${song.artist}</div>
                     </div>
-                    
                 `;
                 item.addEventListener('click', () => {
                     currentSongIndex = index;
@@ -689,7 +710,8 @@
             currentSongTitle.textContent = song.title;
             currentSongArtist.textContent = song.artist;
             
-            youtubeIframe.src = `https://www.youtube.com/embed/${song.youtubeId}?autoplay=1`;
+            // Load video mới
+            player.loadVideoById(song.youtubeId);
             
             // Update active state
             document.querySelectorAll('.playlist-item').forEach((item, i) => {
@@ -714,9 +736,6 @@
             currentSongIndex = (currentSongIndex + 1) % songs.length;
             loadSong(currentSongIndex);
         }
-
-        // Khởi chạy
-        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
