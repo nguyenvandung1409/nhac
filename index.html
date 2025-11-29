@@ -755,13 +755,13 @@
             const song = songs[index];
             currentSongIndex = index;
             
+            // Cập nhật thông tin bài hát và playlist ngay lập tức
+            updateSongInfo();
+            updateActivePlaylistItem();
+            
             if (isPlayerReady && player && player.loadVideoById) {
                 // Load video mới
                 player.loadVideoById(song.youtubeId);
-            } else {
-                // Nếu player chưa sẵn sàng, cập nhật thông tin và chờ player ready
-                updateSongInfo();
-                updateActivePlaylistItem();
             }
         }
 
