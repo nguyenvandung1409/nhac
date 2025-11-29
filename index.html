@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <!-- Nếu file ảnh của bạn là favicon.png -->
+    <link rel="icon" href="./favicon.png" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nguyễn Văn Dũng - Trải nghiệm âm nhạc tuyệt vời</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #1a1a2e;
+            --light: #f5f6fa;
+            --gray: #636e72;
+            --card-bg: rgba(30, 30, 46, 0.8);
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: var(--light);
+            height: calc(100vh - 20px);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 15px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--light);
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .greeting {
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            padding: 12px 24px;
+            border-radius: 25px;
+            animation: rainbowFlash 2s ease-in-out infinite, textGlow 3s ease-in-out infinite alternate;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .greeting::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent);
+            animation: shimmerFlash 2s ease-in-out infinite;
+        }
+
+        @keyframes rainbowFlash {
+            0%, 100% {
+                color: #6c5ce7;
+                text-shadow: 0 0 10px #6c5ce7;
+            }
+            16% {
+                color: #ff6b6b;
+                text-shadow: 0 0 15px #ff6b6b;
+            }
+            32% {
+                color: #feca57;
+                text-shadow: 0 0 15px #feca57;
+            }
+            48% {
+                color: #48dbfb;
+                text-shadow: 0 0 15px #48dbfb;
+            }
+            64% {
+                color: #1dd1a1;
+                text-shadow: 0 0 15px #1dd1a1;
+            }
+            80% {
+                color: #ff9ff3;
+                text-shadow: 0 0 15px #ff9ff3;
+            }
+        }
+
+        @keyframes textGlow {
+            0% {
+                text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+            }
+            100% {
+                text-shadow: 0 0 15px currentColor, 0 0 30px currentColor, 0 0 45px currentColor;
+            }
+        }
+
+        @keyframes shimmerFlash {
+            0% {
+                left: -100%;
+            }
+            50% {
+                left: 100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+            height: calc(100% - 70px);
+        }
+
+        /* Player Section */
+        .player-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            height: 100%;
+        }
+
+        .youtube-player {
+            width: 100%;
+            height: 340px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            flex-shrink: 0;
+        }
+
+        .youtube-player iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+
+        .song-info {
+            text-align: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .song-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--light);
+            letter-spacing: -0.5px;
+        }
+
+        .song-artist {
+            font-size: 15px;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .song-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            color: var(--light);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-btn:hover {
+            background: var(--primary);
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.4);
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 56px;
+            height: 56px;
+            font-size: 18px;
+            box-shadow: 0 4px 16px rgba(108, 92, 231, 0.4);
+        }
+
+        .play-btn:hover {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            transform: scale(1.1);
+        }
+
+        .progress-area {
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .progress-bar {
+            height: 6px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            width: 30%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.1s ease;
+            position: relative;
+        }
+
+        .progress::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--light);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar:hover .progress::after {
+            opacity: 1;
+        }
+
+        .timer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+
+        .volume-control i {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .volume-level {
+            position: absolute;
+            height: 100%;
+            width: 70%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .volume-handle {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--light);
+            border-radius: 50%;
+            top: 50%;
+            right: 30%;
+            transform: translate(50%, -50%);
+            cursor: grab;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .volume-handle:hover {
+            transform: translate(50%, -50%) scale(1.2);
+        }
+
+        /* Playlist */
+        .playlist-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .playlist-header {
+            position: sticky;
+            top: 0;
+            background: var(--card-bg);
+            padding: 15px 0 20px 0;
+            margin: -20px -20px 15px -20px;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.3px;
+            padding: 0 20px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .playlist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+
+        .playlist-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(4px);
+            border-color: rgba(108, 92, 231, 0.3);
+        }
+
+        .playlist-item.active {
+            background: rgba(108, 92, 231, 0.15);
+            border-color: rgba(108, 92, 231, 0.4);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+        }
+
+        .playlist-item img {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .playlist-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .playlist-details {
+            flex: 1;
+        }
+
+        .playlist-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--light);
+            letter-spacing: -0.2px;
+        }
+
+        .playlist-artist {
+            font-size: 13px;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .playlist-duration {
+            font-size: 13px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .playlist-section {
+                height: 350px;
+                order: 2;
+            }
+            
+            .player-section {
+                order: 1;
+                height: auto;
+            }
+            
+            .youtube-player {
+                height: 300px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .logo-section {
+                flex-direction: column;
+                gap: 12px;
+                width: 100%;
+            }
+            
+            .greeting {
+                font-size: 13px;
+                padding: 10px 20px;
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .logo {
+                font-size: 20px;
+            }
+            
+            .youtube-player {
+                height: 250px;
+            }
+            
+            .song-title {
+                font-size: 20px;
+            }
+            
+            .song-controls {
+                gap: 8px;
+            }
+            
+            .control-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+            
+            .play-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 16px;
+            }
+            
+            .playlist-section {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .greeting {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+            
+            .youtube-player {
+                height: 200px;
+            }
+            
+            .song-title {
+                font-size: 18px;
+            }
+            
+            .song-artist {
+                font-size: 13px;
+            }
+            
+            .playlist-item {
+                padding: 12px;
+                gap: 12px;
+            }
+            
+            .playlist-item img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-music"></i>
+                    <span>Nguyễn Văn Dũng</span>
+                </div>
+                <div class="greeting">
+                    Âm nhạc là một phương thuốc cho tâm hồn. Hãy nghe nhạc với trái tim, vì nó sẽ nói lên những gì từ lời nói không thể!
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="player-section">
+                <div class="youtube-player">
+                    <iframe 
+                        src="https://www.youtube.com/embed/TzkymcRi-Dg?si=ztb1K6Y5r94gPpeG" 
+                        title="YouTube video player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        referrerpolicy="strict-origin-when-cross-origin" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                
+                <div class="song-info">
+                    <h2 class="song-title" id="current-song-title">Blinding Lights</h2>
+                    <p class="song-artist" id="current-song-artist">The Weeknd</p>
+                </div>
+
+                <div class="song-controls">
+                    <button class="control-btn" id="shuffle-btn"><i class="fas fa-random"></i></button>
+                    <button class="control-btn" id="prev-btn"><i class="fas fa-step-backward"></i></button>
+                    <button class="control-btn play-btn" id="play-btn"><i class="fas fa-play"></i></button>
+                    <button class="control-btn" id="next-btn"><i class="fas fa-step-forward"></i></button>
+                    <button class="control-btn" id="repeat-btn"><i class="fas fa-redo"></i></button>
+                </div>
+
+                <div class="progress-area">
+                    <div class="progress-bar" id="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                    <div class="timer">
+                        <span id="current-time">0:00</span>
+                        <span id="duration">3:20</span>
+                    </div>
+                </div>
+
+                <div class="volume-control">
+                    <i class="fas fa-volume-up"></i>
+                    <div class="volume-slider" id="volume-slider">
+                        <div class="volume-level"></div>
+                        <div class="volume-handle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="playlist-section">
+                <div class="playlist-header">
+                    <h3 class="section-title">
+                        <i class="fas fa-list"></i>
+                        Danh sách phát
+                    </h3>
+                </div>
+                <div class="playlist" id="playlist">
+                    <!-- Playlist sẽ được tạo bằng JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Danh sách bài hát
+        const songs = [
+            { id: 1, title: "Blinding Lights", artist: "The Weeknd", duration: "3:20", youtubeId: "TzkymcRi-Dg", thumbnail: "https://i.ytimg.com/vi/TzkymcRi-Dg/hqdefault.jpg" },
+            { id: 2, title: "Shape of You", artist: "Ed Sheeran", duration: "3:53", youtubeId: "JGwWNGJdvx8", thumbnail: "https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg" },
+            { id: 3, title: "Dance Monkey", artist: "Tones and I", duration: "3:29", youtubeId: "q0hyYWKXF0Q", thumbnail: "https://i.ytimg.com/vi/q0hyYWKXF0Q/hqdefault.jpg" },
+            { id: 4, title: "Save Your Tears", artist: "The Weeknd", duration: "3:35", youtubeId: "XXYlFuWEuKI", thumbnail: "https://i.ytimg.com/vi/XXYlFuWEuKI/hqdefault.jpg" },
+            { id: 5, title: "Stay", artist: "The Kid LAROI, Justin Bieber", duration: "2:21", youtubeId: "kTJczUoc26U", thumbnail: "https://i.ytimg.com/vi/kTJczUoc26U/hqdefault.jpg" },
+            { id: 6, title: "Levitating", artist: "Dua Lipa", duration: "3:23", youtubeId: "TUVcZfQe-Kw", thumbnail: "https://i.ytimg.com/vi/TUVcZfQe-Kw/hqdefault.jpg" },
+            { id: 7, title: "Good 4 U", artist: "Olivia Rodrigo", duration: "2:58", youtubeId: "gNi_6U5Pm_o", thumbnail: "https://i.ytimg.com/vi/gNi_6U5Pm_o/hqdefault.jpg" },
+            { id: 8, title: "Peaches", artist: "Justin Bieber ft. Daniel Caesar", duration: "3:18", youtubeId: "tQ0yjYUFKAE", thumbnail: "https://i.ytimg.com/vi/tQ0yjYUFKAE/hqdefault.jpg" },
+            { id: 9, title: "Montero", artist: "Lil Nas X", duration: "2:00", youtubeId: "6swmTBVI83k", thumbnail: "https://i.ytimg.com/vi/6swmTBVI83k/hqdefault.jpg" },
+            { id: 10, title: "Stay With Me", artist: "Miki Matsubara", duration: "4:55", youtubeId: "pJqo0k31UcY", thumbnail: "https://i.ytimg.com/vi/pJqo0k31UcY/hqdefault.jpg" }
+        ];
+
+        // Biến toàn cục
+        let currentSongIndex = 0;
+        let isPlaying = false;
+        let isShuffled = false;
+        let isRepeating = false;
+        let volume = 0.7;
+
+        // DOM Elements
+        const playBtn = document.getElementById('play-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        const repeatBtn = document.getElementById('repeat-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const currentSongTitle = document.getElementById('current-song-title');
+        const currentSongArtist = document.getElementById('current-song-artist');
+        const playlistEl = document.getElementById('playlist');
+        const youtubeIframe = document.querySelector('.youtube-player iframe');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeLevel = volumeSlider.querySelector('.volume-level');
+        const volumeHandle = volumeSlider.querySelector('.volume-handle');
+
+        // Khởi tạo
+        function init() {
+            renderPlaylist();
+            loadSong(currentSongIndex);
+            setupEventListeners();
+            setupVolumeControl();
+        }
+
+        // Render playlist
+        function renderPlaylist() {
+            playlistEl.innerHTML = '';
+            songs.forEach((song, index) => {
+                const item = document.createElement('div');
+                item.className = `playlist-item ${index === currentSongIndex ? 'active' : ''}`;
+                item.innerHTML = `
+                    <img src="${song.thumbnail}" alt="${song.title}">
+                    <div class="playlist-details">
+                        <div class="playlist-title">${song.title}</div>
+                        <div class="playlist-artist">${song.artist}</div>
+                    </div>
+                    <div class="playlist-duration">${song.duration}</div>
+                `;
+                item.addEventListener('click', () => {
+                    currentSongIndex = index;
+                    loadSong(currentSongIndex);
+                    playSong();
+                });
+                playlistEl.appendChild(item);
+            });
+        }
+
+        // Tải bài hát
+        function loadSong(index) {
+            const song = songs[index];
+            currentSongTitle.textContent = song.title;
+            currentSongArtist.textContent = song.artist;
+            
+            youtubeIframe.src = `https://www.youtube.com/embed/${song.youtubeId}?autoplay=0`;
+            
+            // Update active state
+            document.querySelectorAll('.playlist-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+            
+            // Reset progress
+            progress.style.width = '0%';
+            currentTimeEl.textContent = '0:00';
+            durationEl.textContent = song.duration;
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            playBtn.addEventListener('click', togglePlay);
+            prevBtn.addEventListener('click', prevSong);
+            nextBtn.addEventListener('click', nextSong);
+            shuffleBtn.addEventListener('click', toggleShuffle);
+            repeatBtn.addEventListener('click', toggleRepeat);
+            progressBar.addEventListener('click', setProgress);
+        }
+
+        // Volume control
+        function setupVolumeControl() {
+            let isDragging = false;
+
+            const updateVolume = (clientX) => {
+                const rect = volumeSlider.getBoundingClientRect();
+                let newVolume = (clientX - rect.left) / rect.width;
+                newVolume = Math.max(0, Math.min(1, newVolume));
+                
+                volume = newVolume;
+                volumeLevel.style.width = `${volume * 100}%`;
+                volumeHandle.style.right = `${(1 - volume) * 100}%`;
+            };
+
+            volumeSlider.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                updateVolume(e.clientX);
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    updateVolume(e.clientX);
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            volumeSlider.addEventListener('click', (e) => {
+                updateVolume(e.clientX);
+            });
+        }
+
+        // Các hàm điều khiển
+        function togglePlay() {
+            if (isPlaying) {
+                pauseSong();
+            } else {
+                playSong();
+            }
+        }
+
+        function playSong() {
+            isPlaying = true;
+            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            startProgressSimulation();
+        }
+
+        function pauseSong() {
+            isPlaying = false;
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            clearInterval(progressInterval);
+        }
+
+        function nextSong() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(currentSongIndex);
+            if (isPlaying) playSong();
+        }
+
+        function prevSong() {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(currentSongIndex);
+            if (isPlaying) playSong();
+        }
+
+        function toggleShuffle() {
+            isShuffled = !isShuffled;
+            shuffleBtn.style.color = isShuffled ? 'var(--primary)' : 'var(--light)';
+        }
+
+        function toggleRepeat() {
+            isRepeating = !isRepeating;
+            repeatBtn.style.color = isRepeating ? 'var(--primary)' : 'var(--light)';
+        }
+
+        function setProgress(e) {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            progress.style.width = `${percent * 100}%`;
+        }
+
+        // Progress simulation
+        let progressInterval;
+        function startProgressSimulation() {
+            clearInterval(progressInterval);
+            let currentTime = 0;
+            const duration = 200;
+
+            progressInterval = setInterval(() => {
+                if (currentTime >= duration) {
+                    clearInterval(progressInterval);
+                    if (isRepeating) {
+                        currentTime = 0;
+                        startProgressSimulation();
+                    } else {
+                        nextSong();
+                    }
+                    return;
+                }
+                
+                currentTime++;
+                progress.style.width = `${(currentTime / duration) * 100}%`;
+                currentTimeEl.textContent = formatTime(currentTime);
+            }, 1000);
+        }
+
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = seconds % 60;
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        // Khởi chạy
+        window.onload = init;
+    </script>
+</body>
+</html>
