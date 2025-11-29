@@ -241,13 +241,24 @@
             overflow: hidden;
             margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .youtube-player iframe {
+        #player {
             width: 100%;
             height: 100%;
             border: none;
             border-radius: 12px;
+        }
+
+        .player-placeholder {
+            color: #888;
+            font-size: 16px;
+            text-align: center;
+            padding: 20px;
         }
 
         .song-info {
@@ -546,15 +557,8 @@
         <div class="main-content">
             <div class="player-section">
                 <div class="youtube-player">
-                    <iframe 
-                        id="youtube-iframe"
-                        src="https://www.youtube.com/embed/TzkymcRi-Dg?si=ztb1K6Y5r94gPpeG&autoplay=1&enablejsapi=1" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        referrerpolicy="strict-origin-when-cross-origin" 
-                        allowfullscreen>
-                    </iframe>
+                    <!-- Player sẽ được tạo bằng JavaScript -->
+                    <div id="player"></div>
                 </div>
                 
                 <div class="song-info">
@@ -586,6 +590,7 @@
         </div>
     </div>
 
+    <!-- YouTube Player API -->
     <script>
         // Danh sách bài hát
         const songs = [
@@ -642,7 +647,8 @@
 
         // Biến toàn cục
         let currentSongIndex = 0;
-        let checkVideoEndInterval;
+        let player;
+        let isPlayerReady = false;
 
         // DOM Elements
         const prevBtn = document.getElementById('prev-btn');
@@ -650,14 +656,70 @@
         const currentSongTitle = document.getElementById('current-song-title');
         const currentSongArtist = document.getElementById('current-song-artist');
         const playlistEl = document.getElementById('playlist');
-        const youtubeIframe = document.getElementById('youtube-iframe');
 
-        // Khởi tạo
-        function init() {
+        // Khởi tạo ứng dụng
+        function initApp() {
             renderPlaylist();
-            loadSong(currentSongIndex);
             setupEventListeners();
-            startVideoEndCheck();
+            
+            // Tải YouTube API nếu chưa được tải
+            if (!window.YT) {
+                const tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                const firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                
+                // Đặt callback global cho YouTube API
+                window.onYouTubeIframeAPIReady = function() {
+                    createYouTubePlayer();
+                };
+            } else {
+                // Nếu API đã được tải, tạo player ngay lập tức
+                createYouTubePlayer();
+            }
+        }
+
+        // Tạo YouTube Player
+        function createYouTubePlayer() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: songs[currentSongIndex].youtubeId,
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'rel': 0,
+                    'modestbranding': 1,
+                    'enablejsapi': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+        }
+
+        // Khi player sẵn sàng
+        function onPlayerReady(event) {
+            isPlayerReady = true;
+            console.log('YouTube Player is ready');
+            updateSongInfo();
+            updateActivePlaylistItem();
+        }
+
+        // Xử lý lỗi player
+        function onPlayerError(event) {
+            console.error('YouTube Player Error:', event.data);
+            // Có thể thêm thông báo lỗi cho người dùng ở đây
+        }
+
+        // Theo dõi trạng thái player
+        function onPlayerStateChange(event) {
+            // Khi video kết thúc (trạng thái = 0)
+            if (event.data === YT.PlayerState.ENDED) {
+                nextSong();
+            }
         }
 
         // Render playlist
@@ -667,7 +729,7 @@
                 const item = document.createElement('div');
                 item.className = `playlist-item ${index === currentSongIndex ? 'active' : ''}`;
                 item.innerHTML = `
-                    <img src="${song.thumbnail}" alt="${song.title}">
+                    <img src="${song.thumbnail}" alt="${song.title}" onerror="this.src='https://via.placeholder.com/48x48/6c5ce7/ffffff?text=♪'">
                     <div class="playlist-details">
                         <div class="playlist-title">${song.title}</div>
                         <div class="playlist-artist">${song.artist}</div>
@@ -681,40 +743,33 @@
             });
         }
 
+        // Cập nhật thông tin bài hát
+        function updateSongInfo() {
+            const song = songs[currentSongIndex];
+            currentSongTitle.textContent = song.title;
+            currentSongArtist.textContent = song.artist;
+        }
+
         // Tải bài hát
         function loadSong(index) {
             const song = songs[index];
-            currentSongTitle.textContent = song.title;
-            currentSongArtist.textContent = song.artist;
+            currentSongIndex = index;
             
-            // Cập nhật iframe với video mới
-            youtubeIframe.src = `https://www.youtube.com/embed/${song.youtubeId}?autoplay=1&enablejsapi=1`;
-            
-            // Update active state
-            document.querySelectorAll('.playlist-item').forEach((item, i) => {
-                item.classList.toggle('active', i === index);
-            });
-        }
-
-        // Bắt đầu kiểm tra khi video kết thúc
-        function startVideoEndCheck() {
-            // Kiểm tra mỗi 1 giây
-            checkVideoEndInterval = setInterval(() => {
-                checkVideoEnd();
-            }, 1000);
-        }
-
-        // Kiểm tra nếu video đã kết thúc
-        function checkVideoEnd() {
-            try {
-                // Lấy thời gian hiện tại và thời lượng của video từ URL
-                const iframeSrc = youtubeIframe.src;
-                // Đây là cách đơn giản để phát hiện video mới được tải
-                // Trong thực tế, bạn cần YouTube API để biết chính xác thời gian
-                // Nhưng với cách này, chúng ta sẽ dựa vào việc người dùng không tương tác
-            } catch (error) {
-                console.log('Không thể kiểm tra trạng thái video');
+            if (isPlayerReady && player && player.loadVideoById) {
+                // Load video mới
+                player.loadVideoById(song.youtubeId);
+            } else {
+                // Nếu player chưa sẵn sàng, cập nhật thông tin và chờ player ready
+                updateSongInfo();
+                updateActivePlaylistItem();
             }
+        }
+
+        // Cập nhật trạng thái active của playlist
+        function updateActivePlaylistItem() {
+            document.querySelectorAll('.playlist-item').forEach((item, i) => {
+                item.classList.toggle('active', i === currentSongIndex);
+            });
         }
 
         // Event listeners
@@ -722,10 +777,22 @@
             prevBtn.addEventListener('click', prevSong);
             nextBtn.addEventListener('click', nextSong);
             
-            // Thêm sự kiện để phát hiện khi video kết thúc (cách đơn giản)
-            youtubeIframe.addEventListener('load', function() {
-                // Reset timer mỗi khi video mới được tải
-                console.log('Video mới được tải');
+            // Thêm phím tắt bàn phím
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'ArrowLeft') {
+                    prevSong();
+                } else if (e.code === 'ArrowRight') {
+                    nextSong();
+                } else if (e.code === 'Space') {
+                    e.preventDefault();
+                    if (player && player.getPlayerState) {
+                        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+                            player.pauseVideo();
+                        } else {
+                            player.playVideo();
+                        }
+                    }
+                }
             });
         }
 
@@ -741,22 +808,15 @@
             loadSong(currentSongIndex);
         }
 
-        // Phát hiện khi người dùng chuyển tab hoặc thu nhỏ trình duyệt
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                clearInterval(checkVideoEndInterval);
-            } else {
-                startVideoEndCheck();
-            }
-        });
-
-        // Khởi chạy
-        document.addEventListener('DOMContentLoaded', init);
-
-        // Hàm để chuyển bài tự động (có thể gọi từ console để test)
-        window.autoNext = function() {
-            nextSong();
-        };
+        // Khởi động ứng dụng khi trang đã tải xong
+        document.addEventListener('DOMContentLoaded', initApp);
+        
+        // Fallback: khởi động ứng dụng nếu DOMContentLoaded đã xảy ra
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
