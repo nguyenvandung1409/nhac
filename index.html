@@ -384,7 +384,7 @@
         .playlist-section {
             background: var(--card-bg);
             border-radius: 16px;
-            padding: 20px;
+            padding: 15px 10px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -417,7 +417,7 @@
         .playlist {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
             flex: 1;
             overflow-y: auto;
             padding-right: 5px;
@@ -426,18 +426,18 @@
         .playlist-item {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 14px;
+            gap: 12px;
+            padding: 12px 12px;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid transparent;
             flex-shrink: 0;
+            position: relative;
         }
 
         .playlist-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateX(4px);
+            background: rgba(255, 255, 255, 0.08);            
             border-color: rgba(108, 92, 231, 0.3);
         }
 
@@ -483,7 +483,41 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
+        /* Equalizer (sóng nhạc) */
+        .equalizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 20px;
+            margin-left: auto;
+            margin-right: 5px;
+            opacity: 0; /* Ban đầu ẩn */
+            transition: opacity 0.3s ease;
+        }
+
+        .playlist-item.active .equalizer {
+            opacity: 1; /* Hiện khi active */
+        }
+
+        .equalizer-bar {
+            width: 3px;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            border-radius: 2px;
+            height: 40%; /* Chiều cao mặc định */
+            animation: equalizerAnimation 1.2s ease infinite alternate;
+        }        
+
+        @keyframes equalizerAnimation {
+            0% {
+                transform: scaleY(0.3);
+            }
+            100% {
+                transform: scaleY(1);
+            }
+        }
+
+              
         /* Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
@@ -566,6 +600,11 @@
             .playlist-section {
                 height: 200px;
             }
+            
+            .equalizer {
+                display: none; /* Ẩn equalizer trên mobile để tiết kiệm không gian */
+            }
+            
         }
 
         @media (max-width: 480px) {
@@ -723,6 +762,8 @@
         let currentSongIndex = 0;
         let player;
         let isPlayerReady = false;
+        let isPlaying = false;
+        let equalizerInterval = null;
 
         // DOM Elements
         const prevBtn = document.getElementById('prev-btn');
@@ -780,6 +821,16 @@
             console.log('YouTube Player is ready');
             updateSongInfo();
             updateActivePlaylistItem();
+            
+            // Bắt đầu phát nhạc tự động
+            event.target.playVideo();
+            isPlaying = true;
+            
+            // Gọi updateActivePlaylistItem lại sau 1 chút để đảm bảo đã phát
+            setTimeout(() => {
+                updateActivePlaylistItem();
+                startEqualizerAnimation();
+            }, 500);
         }
 
         // Xử lý lỗi player
@@ -790,13 +841,59 @@
 
         // Theo dõi trạng thái player
         function onPlayerStateChange(event) {
+            // Khi video đang phát
+            if (event.data === YT.PlayerState.PLAYING) {
+                isPlaying = true;
+                updateActivePlaylistItem();
+                startEqualizerAnimation();
+            } 
+            // Khi video dừng
+            else if (event.data === YT.PlayerState.PAUSED) {
+                isPlaying = false;
+                updateActivePlaylistItem();
+                stopEqualizerAnimation();
+            }
             // Khi video kết thúc (trạng thái = 0)
-            if (event.data === YT.PlayerState.ENDED) {
+            else if (event.data === YT.PlayerState.ENDED) {
+                isPlaying = false;
+                updateActivePlaylistItem();
+                stopEqualizerAnimation();
                 nextSong();
             }
         }
 
-        // Render playlist
+        // Bắt đầu hiệu ứng equalizer
+        function startEqualizerAnimation() {
+            if (equalizerInterval) {
+                clearInterval(equalizerInterval);
+            }
+            
+            equalizerInterval = setInterval(() => {
+                const equalizerBars = document.querySelectorAll('.playlist-item.active .equalizer-bar');
+                equalizerBars.forEach(bar => {
+                    // Tạo ngẫu nhiên chiều cao cho các thanh equalizer
+                    const randomHeight = Math.floor(Math.random() * 70) + 30; // 30% đến 100%
+                    bar.style.height = `${randomHeight}%`;
+                });
+            }, 200); // Cập nhật mỗi 200ms
+        }
+
+        // Dừng hiệu ứng equalizer
+        function stopEqualizerAnimation() {
+            if (equalizerInterval) {
+                clearInterval(equalizerInterval);
+                equalizerInterval = null;
+            }
+            
+            // Đặt lại chiều cao mặc định cho equalizer
+            const equalizerBars = document.querySelectorAll('.playlist-item.active .equalizer-bar');
+            equalizerBars.forEach((bar, index) => {
+                const defaultHeights = [60, 40, 80, 30, 70];
+                bar.style.height = `${defaultHeights[index] || 50}%`;
+            });
+        }
+
+        // Render playlist với equalizer
         function renderPlaylist() {
             playlistEl.innerHTML = '';
             songs.forEach((song, index) => {
@@ -808,6 +905,11 @@
                         <div class="playlist-title">${song.title}</div>
                         <div class="playlist-artist">${song.artist}</div>
                     </div>
+                    <div class="equalizer">
+                        <div class="equalizer-bar"></div>
+                        <div class="equalizer-bar"></div>
+                        <div class="equalizer-bar"></div>                        
+                    </div>                    
                 `;
                 item.addEventListener('click', () => {
                     currentSongIndex = index;
@@ -836,13 +938,40 @@
             if (isPlayerReady && player && player.loadVideoById) {
                 // Load video mới
                 player.loadVideoById(song.youtubeId);
+                
+                // Reset trạng thái
+                isPlaying = false;
+                stopEqualizerAnimation();
+                
+                // Bật equalizer sau khi video bắt đầu phát
+                setTimeout(() => {
+                    isPlaying = true;
+                    updateActivePlaylistItem();
+                    startEqualizerAnimation();
+                }, 1000);
             }
         }
 
         // Cập nhật trạng thái active của playlist
         function updateActivePlaylistItem() {
             document.querySelectorAll('.playlist-item').forEach((item, i) => {
-                item.classList.toggle('active', i === currentSongIndex);
+                const isActive = i === currentSongIndex;
+                item.classList.toggle('active', isActive);
+                
+                // Đồng bộ trạng thái equalizer
+                const equalizer = item.querySelector('.equalizer');
+                
+                if (isActive && isPlaying) {
+                    if (equalizer) {
+                        equalizer.style.opacity = '1';
+                        equalizer.style.display = 'flex';
+                    }
+                } else {
+                    if (equalizer) {
+                        equalizer.style.opacity = '0';
+                        equalizer.style.display = 'flex'; // Vẫn giữ display flex nhưng opacity = 0
+                    }
+                }
             });
         }
 
@@ -862,9 +991,14 @@
                     if (player && player.getPlayerState) {
                         if (player.getPlayerState() === YT.PlayerState.PLAYING) {
                             player.pauseVideo();
+                            isPlaying = false;
+                            stopEqualizerAnimation();
                         } else {
                             player.playVideo();
+                            isPlaying = true;
+                            startEqualizerAnimation();
                         }
+                        updateActivePlaylistItem();
                     }
                 }
             });
