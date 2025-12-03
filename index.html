@@ -42,7 +42,7 @@
             background-position: center;
             background-repeat: no-repeat;
             color: var(--light);
-            min-height: 100vh;
+            min-height: 100dvh;
             overflow: hidden;
             position: relative;
         }
@@ -93,8 +93,8 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 15px;
-            height: 100vh;
-            max-height: 100vh;
+            height: 100dvh;
+            max-height: 100dvh;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -939,25 +939,22 @@
             const song = songs[index];
             currentSongIndex = index;
             
-            // Cập nhật thông tin bài hát và playlist ngay lập tức
             updateSongInfo();
             updateActivePlaylistItem();
             
-            if (isPlayerReady && player && player.loadVideoById) {
-                // Load video mới
-                player.loadVideoById(song.youtubeId);
-                
-                // Reset trạng thái
-                isPlaying = false;
-                stopEqualizerAnimation();
-                
-                // Bật equalizer sau khi video bắt đầu phát
-                setTimeout(() => {
-                    isPlaying = true;
-                    updateActivePlaylistItem();
-                    startEqualizerAnimation();
-                }, 1000);
-            }
+            // ⭐ CHỈ CẦN THÊM 1 DÒNG NÀY LÀ ĐỦ ⭐
+            if (!player || !player.loadVideoById) return;
+            
+            player.loadVideoById(song.youtubeId);
+            
+            isPlaying = false;
+            stopEqualizerAnimation();
+            
+            setTimeout(() => {
+                isPlaying = true;
+                updateActivePlaylistItem();
+                startEqualizerAnimation();
+            }, 1000);
         }
 
         // Cập nhật trạng thái active của playlist
