@@ -683,8 +683,8 @@
                 </div>
                 
                 <div class="song-info">
-                    <h2 class="song-title" id="current-song-title">Nhạc Chill quán Cafe</h2>
-                    <p class="song-artist" id="current-song-artist">Phố Chill</p>
+                    <h2 class="song-title" id="current-song-title"></h2>
+                    <p class="song-artist" id="current-song-artist"></p>
                 </div>
 
                 <div class="song-controls">
@@ -711,332 +711,206 @@
         </div>
     </div>
 
-    <!-- YouTube Player API -->
-    <script>
-        // Danh sách bài hát
-        const songs = [
-            { 
-                id: 1, 
-                title: "Nhạc Chill quán Cafe", 
-                artist: "Phố Chill",                 
-                youtubeId: "TzkymcRi-Dg", 
-                thumbnail: "https://i.ytimg.com/vi/TzkymcRi-Dg/hqdefault.jpg" 
-            },
-            { 
-                id: 2, 
-                title: "Thiệp hồng sai tên Lofi", 
-                artist: "Amint Music",                 
-                youtubeId: "sh7MIoFDsrw", 
-                thumbnail: "https://i.ytimg.com/vi/sh7MIoFDsrw/hqdefault.jpg" 
-            },
-            { 
-                id: 3, 
-                title: "Yên vũ xướng Dương Châu", 
-                artist: "Nhạc Chill",                 
-                youtubeId: "q6OCvgcyN40", 
-                thumbnail: "https://i.ytimg.com/vi/q6OCvgcyN40/hqdefault.jpg" 
-            },
-            { 
-                id: 4, 
-                title: "Đoạn tình duyên gửi tặng ai", 
-                artist: "Nhạc Chill",                 
-                youtubeId: "vJld2wSPGCs", 
-                thumbnail: "https://i.ytimg.com/vi/vJld2wSPGCs/hqdefault.jpg" 
-            },
-            { 
-                id: 5, 
-                title: "Thiên tằng tuyết", 
-                artist: "Nhạc Chill",                 
-                youtubeId: "XxnfmFc06S0", 
-                thumbnail: "https://i.ytimg.com/vi/XxnfmFc06S0/hqdefault.jpg" 
-            },
-            { 
-                id: 6, 
-                title: "500 năm bãi bể nương dâu", 
-                artist: "Nhạc Chill",                 
-                youtubeId: "V3J0-W1b0N4", 
-                thumbnail: "https://i.ytimg.com/vi/V3J0-W1b0N4/hqdefault.jpg" 
-            },
-            { 
-                id: 7, 
-                title: "Biệt tri kỷ", 
-                artist: "Hải Lai A Mộc",                 
-                youtubeId: "54Uq3BH6DwY", 
-                thumbnail: "https://i.ytimg.com/vi/54Uq3BH6DwY/hqdefault.jpg" 
-            },
-            { 
-                id: 8, 
-                title: "Top Christmas Songs", 
-                artist: "Nhạc Giáng sinh",                 
-                youtubeId: "t_HUlkHYz4A", 
-                thumbnail: "https://i.ytimg.com/vi/t_HUlkHYz4A/hqdefault.jpg" 
-            }
-        ];
+    <!-- YouTube Player API -->    
+<script>
+    // DANH SÁCH BÀI HÁT (8 bài đầy đủ)
+    const songs = [
+        { title: "Nhạc Chill quán Cafe", artist: "Phố Chill", youtubeId: "TzkymcRi-Dg", thumbnail: "https://i.ytimg.com/vi/TzkymcRi-Dg/hqdefault.jpg" },
+        { title: "Thiệp hồng sai tên Lofi", artist: "Amint Music", youtubeId: "sh7MIoFDsrw", thumbnail: "https://i.ytimg.com/vi/sh7MIoFDsrw/hqdefault.jpg" },
+        { title: "Yên vũ xướng Dương Châu", artist: "Nhạc Chill", youtubeId: "q6OCvgcyN40", thumbnail: "https://i.ytimg.com/vi/q6OCvgcyN40/hqdefault.jpg" },
+        { title: "Đoạn tình duyên gửi tặng ai", artist: "Nhạc Chill", youtubeId: "vJld2wSPGCs", thumbnail: "https://i.ytimg.com/vi/vJld2wSPGCs/hqdefault.jpg" },
+        { title: "Thiên tằng tuyết", artist: "Nhạc Chill", youtubeId: "XxnfmFc06S0", thumbnail: "https://i.ytimg.com/vi/XxnfmFc06S0/hqdefault.jpg" },
+        { title: "500 năm bãi bể nương dâu", artist: "Nhạc Chill", youtubeId: "V3J0-W1b0N4", thumbnail: "https://i.ytimg.com/vi/V3J0-W1b0N4/hqdefault.jpg" },
+        { title: "Biệt tri kỷ", artist: "Hải Lai A Mộc", youtubeId: "54Uq3BH6DwY", thumbnail: "https://i.ytimg.com/vi/54Uq3BH6DwY/hqdefault.jpg" },
+        { title: "Top Christmas Songs", artist: "Nhạc Giáng sinh", youtubeId: "t_HUlkHYz4A", thumbnail: "https://i.ytimg.com/vi/t_HUlkHYz4A/hqdefault.jpg" }
+    ];
 
-        // Biến toàn cục
-        let currentSongIndex = 0;
-        let player;
-        let isPlayerReady = false;
-        let isPlaying = false;
-        let equalizerInterval = null;
+    let currentIndex = 0;
+    let player;
+    let isPlaying = false;
+    let equalizerInterval = null;
 
-        // DOM Elements
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const currentSongTitle = document.getElementById('current-song-title');
-        const currentSongArtist = document.getElementById('current-song-artist');
-        const playlistEl = document.getElementById('playlist');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const currentSongTitle = document.getElementById('current-song-title');
+    const currentSongArtist = document.getElementById('current-song-artist');
+    const playlistEl = document.getElementById('playlist');
 
-        // Khởi tạo ứng dụng
-        function initApp() {
-            renderPlaylist();
-            setupEventListeners();
-            
-            // Tải YouTube API nếu chưa được tải
-            if (!window.YT) {
-                const tag = document.createElement('script');
-                tag.src = "https://www.youtube.com/iframe_api";
-                const firstScriptTag = document.getElementsByTagName('script')[0];
-                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-                
-                // Đặt callback global cho YouTube API
-                window.onYouTubeIframeAPIReady = function() {
-                    createYouTubePlayer();
-                };
-            } else {
-                // Nếu API đã được tải, tạo player ngay lập tức
-                createYouTubePlayer();
-            }
+    // KHỞI TẠO ỨNG DỤNG
+    function initApp() {
+        console.log("Đang khởi tạo player nhạc...");
+        renderPlaylist();
+        setupEventListeners();
+        loadYouTubeAPI();
+    }
+
+    function loadYouTubeAPI() {
+        if (!window.YT) {
+            console.log("Đang tải YouTube API...");
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            document.head.appendChild(tag);
+            window.onYouTubeIframeAPIReady = createYouTubePlayer;
+        } else {
+            createYouTubePlayer();
         }
+    }
 
-        // Tạo YouTube Player
-        function createYouTubePlayer() {
-            player = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
-                videoId: songs[currentSongIndex].youtubeId,
-                playerVars: {
-                    'playsinline': 1,
-                    'controls': 1,
-                    'rel': 0,
-                    'modestbranding': 1,
-                    'enablejsapi': 1
+    function createYouTubePlayer() {
+        console.log("Tạo YouTube player với video:", songs[currentIndex].youtubeId);
+        player = new YT.Player('player', {
+            height: '100%',
+            width: '100%',
+            videoId: songs[currentIndex].youtubeId,
+            playerVars: { 'playsinline': 1, 'controls': 1, 'rel': 0, 'modestbranding': 1, 'enablejsapi': 1 },
+            events: {
+                'onReady': (event) => {
+                    console.log("Player đã sẵn sàng!");
+                    updateSongInfo();
+                    updatePlaylistUI();
+                    event.target.playVideo();
+                    isPlaying = true;
+                    startEqualizer();
                 },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError
-                }
-            });
-        }
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
 
-        // Khi player sẵn sàng
-        function onPlayerReady(event) {
-            isPlayerReady = true;
-            console.log('YouTube Player is ready');
-            updateSongInfo();
-            updateActivePlaylistItem();
-            
-            // Bắt đầu phát nhạc tự động
-            event.target.playVideo();
+    function onPlayerStateChange(event) {
+        console.log("Trạng thái player:", event.data);
+        if (event.data === YT.PlayerState.PLAYING) {
             isPlaying = true;
-            
-            // Gọi updateActivePlaylistItem lại sau 1 chút để đảm bảo đã phát
-            setTimeout(() => {
-                updateActivePlaylistItem();
-                startEqualizerAnimation();
-            }, 500);
-        }
-
-        // Xử lý lỗi player
-        function onPlayerError(event) {
-            console.error('YouTube Player Error:', event.data);
-            // Có thể thêm thông báo lỗi cho người dùng ở đây
-        }
-
-        // Theo dõi trạng thái player
-        function onPlayerStateChange(event) {
-            // Khi video đang phát
-            if (event.data === YT.PlayerState.PLAYING) {
-                isPlaying = true;
-                updateActivePlaylistItem();
-                startEqualizerAnimation();
-            } 
-            // Khi video dừng
-            else if (event.data === YT.PlayerState.PAUSED) {
-                isPlaying = false;
-                updateActivePlaylistItem();
-                stopEqualizerAnimation();
-            }
-            // Khi video kết thúc (trạng thái = 0)
-            else if (event.data === YT.PlayerState.ENDED) {
-                isPlaying = false;
-                updateActivePlaylistItem();
-                stopEqualizerAnimation();
-                nextSong();
-            }
-        }
-
-        // Bắt đầu hiệu ứng equalizer
-        function startEqualizerAnimation() {
-            if (equalizerInterval) {
-                clearInterval(equalizerInterval);
-            }
-            
-            equalizerInterval = setInterval(() => {
-                const equalizerBars = document.querySelectorAll('.playlist-item.active .equalizer-bar');
-                equalizerBars.forEach(bar => {
-                    // Tạo ngẫu nhiên chiều cao cho các thanh equalizer
-                    const randomHeight = Math.floor(Math.random() * 70) + 30; // 30% đến 100%
-                    bar.style.height = `${randomHeight}%`;
-                });
-            }, 200); // Cập nhật mỗi 200ms
-        }
-
-        // Dừng hiệu ứng equalizer
-        function stopEqualizerAnimation() {
-            if (equalizerInterval) {
-                clearInterval(equalizerInterval);
-                equalizerInterval = null;
-            }
-            
-            // Đặt lại chiều cao mặc định cho equalizer
-            const equalizerBars = document.querySelectorAll('.playlist-item.active .equalizer-bar');
-            equalizerBars.forEach((bar, index) => {
-                const defaultHeights = [60, 40, 80, 30, 70];
-                bar.style.height = `${defaultHeights[index] || 50}%`;
-            });
-        }
-
-        // Render playlist với equalizer
-        function renderPlaylist() {
-            playlistEl.innerHTML = '';
-            songs.forEach((song, index) => {
-                const item = document.createElement('div');
-                item.className = `playlist-item ${index === currentSongIndex ? 'active' : ''}`;
-                item.innerHTML = `
-                    <img src="${song.thumbnail}" alt="${song.title}" onerror="this.src='https://via.placeholder.com/48x48/6c5ce7/ffffff?text=♪'">
-                    <div class="playlist-details">
-                        <div class="playlist-title">${song.title}</div>
-                        <div class="playlist-artist">${song.artist}</div>
-                    </div>
-                    <div class="equalizer">
-                        <div class="equalizer-bar"></div>
-                        <div class="equalizer-bar"></div>
-                        <div class="equalizer-bar"></div>                        
-                    </div>                    
-                `;
-                item.addEventListener('click', () => {
-                    currentSongIndex = index;
-                    loadSong(currentSongIndex);
-                });
-                playlistEl.appendChild(item);
-            });
-        }
-
-        // Cập nhật thông tin bài hát
-        function updateSongInfo() {
-            const song = songs[currentSongIndex];
-            currentSongTitle.textContent = song.title;
-            currentSongArtist.textContent = song.artist;
-        }
-
-        // Tải bài hát
-        function loadSong(index) {
-            const song = songs[index];
-            currentSongIndex = index;
-            
-            updateSongInfo();
-            updateActivePlaylistItem();
-            
-            // ⭐ CHỈ CẦN THÊM 1 DÒNG NÀY LÀ ĐỦ ⭐
-            if (!player || !player.loadVideoById) return;
-            
-            player.loadVideoById(song.youtubeId);
-            
+            startEqualizer();
+        } else if (event.data === YT.PlayerState.PAUSED) {
             isPlaying = false;
-            stopEqualizerAnimation();
+            stopEqualizer();
+        } else if (event.data === YT.PlayerState.ENDED) {
+            isPlaying = false;
+            stopEqualizer();
+            nextSong();
+        }
+        updatePlaylistUI();
+    }
+
+    function startEqualizer() {
+        if (equalizerInterval) clearInterval(equalizerInterval);
+        equalizerInterval = setInterval(() => {
+            document.querySelectorAll('.playlist-item.active .equalizer-bar').forEach(bar => {
+                bar.style.height = `${Math.random() * 70 + 30}%`;
+            });
+        }, 200);
+    }
+
+    function stopEqualizer() {
+        if (equalizerInterval) {
+            clearInterval(equalizerInterval);
+            equalizerInterval = null;
+        }
+    }
+
+    function renderPlaylist() {
+        playlistEl.innerHTML = '';
+        songs.forEach((song, index) => {
+            const item = document.createElement('div');
+            item.className = `playlist-item ${index === currentIndex ? 'active' : ''}`;
+            item.innerHTML = `
+                <img src="${song.thumbnail}" alt="${song.title}" onerror="this.src='https://via.placeholder.com/48x48/6c5ce7/ffffff?text=♪'">
+                <div class="playlist-details">
+                    <div class="playlist-title">${song.title}</div>
+                    <div class="playlist-artist">${song.artist}</div>
+                </div>
+                <div class="equalizer">
+                    <div class="equalizer-bar"></div>
+                    <div class="equalizer-bar"></div>
+                    <div class="equalizer-bar"></div>                        
+                </div>                    
+            `;
+            item.addEventListener('click', () => playSong(index));
+            playlistEl.appendChild(item);
+        });
+        console.log("Đã render playlist với", songs.length, "bài hát");
+    }
+
+    function updateSongInfo() {
+        const song = songs[currentIndex];
+        currentSongTitle.textContent = song.title;
+        currentSongArtist.textContent = song.artist;
+        console.log("Đang phát:", song.title);
+    }
+
+    function playSong(index) {
+        console.log("Chuyển sang bài số", index);
+        currentIndex = index;
+        updateSongInfo();
+        updatePlaylistUI();
+        
+        if (player && player.loadVideoById) {
+            player.loadVideoById(songs[currentIndex].youtubeId);
+            isPlaying = false;
+            stopEqualizer();
             
             setTimeout(() => {
                 isPlaying = true;
-                updateActivePlaylistItem();
-                startEqualizerAnimation();
+                updatePlaylistUI();
+                startEqualizer();
             }, 1000);
         }
+    }
 
-        // Cập nhật trạng thái active của playlist
-        function updateActivePlaylistItem() {
-            document.querySelectorAll('.playlist-item').forEach((item, i) => {
-                const isActive = i === currentSongIndex;
-                item.classList.toggle('active', isActive);
-                
-                // Đồng bộ trạng thái equalizer
-                const equalizer = item.querySelector('.equalizer');
-                
-                if (isActive && isPlaying) {
-                    if (equalizer) {
-                        equalizer.style.opacity = '1';
-                        equalizer.style.display = 'flex';
-                    }
-                } else {
-                    if (equalizer) {
-                        equalizer.style.opacity = '0';
-                        equalizer.style.display = 'flex'; // Vẫn giữ display flex nhưng opacity = 0
-                    }
-                }
-            });
-        }
-
-        // Event listeners
-        function setupEventListeners() {
-            prevBtn.addEventListener('click', prevSong);
-            nextBtn.addEventListener('click', nextSong);
+    function updatePlaylistUI() {
+        document.querySelectorAll('.playlist-item').forEach((item, i) => {
+            const isActive = i === currentIndex;
+            item.classList.toggle('active', isActive);
             
-            // Thêm phím tắt bàn phím
-            document.addEventListener('keydown', (e) => {
-                if (e.code === 'ArrowLeft') {
-                    prevSong();
-                } else if (e.code === 'ArrowRight') {
-                    nextSong();
-                } else if (e.code === 'Space') {
-                    e.preventDefault();
-                    if (player && player.getPlayerState) {
-                        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-                            player.pauseVideo();
-                            isPlaying = false;
-                            stopEqualizerAnimation();
-                        } else {
-                            player.playVideo();
-                            isPlaying = true;
-                            startEqualizerAnimation();
-                        }
-                        updateActivePlaylistItem();
-                    }
-                }
-            });
-        }
+            const equalizer = item.querySelector('.equalizer');
+            if (equalizer) {
+                equalizer.style.opacity = isActive && isPlaying ? '1' : '0';
+            }
+        });
+    }
 
-        // Chuyển đến bài hát trước
-        function prevSong() {
-            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-            loadSong(currentSongIndex);
-        }
+    function prevSong() {
+        currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+        playSong(currentIndex);
+    }
 
-        // Chuyển đến bài hát tiếp theo
-        function nextSong() {
-            currentSongIndex = (currentSongIndex + 1) % songs.length;
-            loadSong(currentSongIndex);
-        }
+    function nextSong() {
+        currentIndex = (currentIndex + 1) % songs.length;
+        playSong(currentIndex);
+    }
 
-        // Khởi động ứng dụng khi trang đã tải xong
-        document.addEventListener('DOMContentLoaded', initApp);
+    function setupEventListeners() {
+        prevBtn.addEventListener('click', prevSong);
+        nextBtn.addEventListener('click', nextSong);
         
-        // Fallback: khởi động ứng dụng nếu DOMContentLoaded đã xảy ra
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
-        }
-    </script>
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'ArrowLeft') prevSong();
+            if (e.code === 'ArrowRight') nextSong();
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (player && player.getPlayerState) {
+                    if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+                        player.pauseVideo();
+                        isPlaying = false;
+                        stopEqualizer();
+                    } else {
+                        player.playVideo();
+                        isPlaying = true;
+                        startEqualizer();
+                    }
+                    updatePlaylistUI();
+                }
+            }
+        });
+    }
+
+    // TỰ ĐỘNG CHẠY
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        initApp();
+    }
+</script>
 </body>
 </html>
